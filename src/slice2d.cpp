@@ -30,6 +30,7 @@
 
 #include "slice2d.h"
 
+#include <iostream>
 #include <stdexcept>
 
 using namespace std;
@@ -83,9 +84,29 @@ void Slice2D::for_each(for_each_cb cb) const
             cb(i, j, (*this)(i, j));
 }
 
+void Slice2D::print() const
+{
+    for_each([this](size_t, size_t j, byte &data) {
+        cout << uint32_t(data);
+        if (j == w() - 1)
+            cout << endl;
+        else
+            cout << ' ';
+    });
+}
+
 void Slice2D::copy_to(const Slice2D &other) const
 {
     for_each([&](size_t i, size_t j, byte &data) {
         other(i, j) = data;
     });
+}
+
+void Slice2D::swap(const Slice2D &other) const
+{
+    vec_byte t(size_x * size_y);
+    Slice2D st(t, size_y, 0, size_x, 1, 0, size_y, 1);
+    copy_to(st);
+    other.copy_to(*this);
+    st.copy_to(other);
 }

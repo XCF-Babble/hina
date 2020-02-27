@@ -54,5 +54,7 @@ public:
     size_t w() const;
     byte &operator ()(size_t x, size_t y) const;
     void for_each(for_each_cb cb) const;
+    void print() const;
     void copy_to(const Slice2D &other) const;
+    void swap(const Slice2D &other) const;
 };
