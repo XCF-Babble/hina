@@ -50,6 +50,14 @@ size_t Slice2D::translate(size_t x, size_t y) const
     return x * width + y;
 }
 
+Slice2D::Slice2D(vec_byte &vec, size_t width) :
+    vec(vec), width(width),
+    start_x(0), size_x(vec.size() / width), step_x(1),
+    start_y(0), size_y(width), step_y(1)
+{
+    if (vec.size() % width > 0)
+        throw runtime_error("slice not rectangular");
+}
 
 Slice2D::Slice2D(vec_byte &vec, size_t width,
     size_t start_x, size_t end_x, size_t step_x,
@@ -105,7 +113,7 @@ void Slice2D::copy_to(const Slice2D &other) const
 void Slice2D::swap(const Slice2D &other) const
 {
     vec_byte t(size_x * size_y);
-    Slice2D st(t, size_y, 0, size_x, 1, 0, size_y, 1);
+    Slice2D st(t, size_y);
     copy_to(st);
     other.copy_to(*this);
     st.copy_to(other);

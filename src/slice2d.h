@@ -47,6 +47,7 @@ private:
     static size_t div_ceil(size_t x, size_t y);
     size_t translate(size_t x, size_t y) const;
 public:
+    Slice2D(vec_byte &vec, size_t width);
     Slice2D(vec_byte &vec, size_t width,
         size_t start_x, size_t end_x, size_t step_x,
         size_t start_y, size_t end_y, size_t step_y);
