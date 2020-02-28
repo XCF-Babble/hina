@@ -25,3 +25,6 @@ add_library(hina
 add_dependencies(hina libsodium)
 include_directories(${CMAKE_BINARY_DIR}/libsodium/include)
 target_link_libraries(hina ${CMAKE_BINARY_DIR}/libsodium/lib/libsodium.a)
+
+add_executable(test src/test.cpp)
+target_link_libraries(test hina)
