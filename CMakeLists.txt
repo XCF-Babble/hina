@@ -7,9 +7,8 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 ExternalProject_Add(libsodium
     PREFIX ${CMAKE_BINARY_DIR}/libsodium
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/libsodium
-    CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure --prefix=/ --disable-pie
+    CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure --prefix=${CMAKE_BINARY_DIR}/libsodium --disable-pie
     BUILD_IN_SOURCE 1
-    INSTALL_COMMAND make DESTDIR=${CMAKE_BINARY_DIR}/libsodium install
     TEST_COMMAND make check
     TEST_BEFORE_INSTALL 1
 )
