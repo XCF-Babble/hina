@@ -5,10 +5,9 @@ add_definitions(-Wall -Wextra)
 
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 ExternalProject_Add(libsodium
-    PREFIX ${CMAKE_SOURCE_DIR}/src/libsodium
+    PREFIX ${CMAKE_BINARY_DIR}/libsodium
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/libsodium
-    INSTALL_DIR ${CMAKE_BINARY_DIR}/libsodium
-    CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure --prefix=/
+    CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure --prefix=/ --disable-pie
     BUILD_IN_SOURCE 1
     INSTALL_COMMAND make DESTDIR=${CMAKE_BINARY_DIR}/libsodium install
     TEST_COMMAND make check
@@ -20,3 +19,6 @@ add_library(hina
     src/random_stream.cpp
     src/slice2d.cpp
 )
+add_dependencies(hina libsodium)
+include_directories(${CMAKE_BINARY_DIR}/libsodium/include)
+target_link_libraries(hina ${CMAKE_BINARY_DIR}/libsodium/lib/libsodium.a)
