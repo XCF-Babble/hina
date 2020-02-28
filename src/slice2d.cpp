@@ -118,3 +118,55 @@ void Slice2D::swap(const Slice2D &other) const
     other.copy_to(*this);
     st.copy_to(other);
 }
+
+void Slice2D::rotate(RotationDirection direction) const
+{
+    if (direction == ROTATE_0)
+        return;
+    vec_byte t(size_x * size_y);
+    Slice2D st(t, size_y);
+    copy_to(st);
+    if (direction == ROTATE_90) {
+        st.for_each([this](size_t i, size_t j, byte &data) {
+            (*this)(size_y - j - 1, i) = data;
+        });
+    } else if (direction == ROTATE_180) {
+        st.for_each([this](size_t i, size_t j, byte &data) {
+            (*this)(size_x - i - 1, size_y - j - 1) = data;
+        });
+    } else if (direction == ROTATE_270) {
+        st.for_each([this](size_t i, size_t j, byte &data) {
+            (*this)(j, size_x - i - 1) = data;
+        });
+    }
+}
+
+void Slice2D::invert(InversionDirection direction) const
+{
+    if (direction == INVERT_HORIZONTAL) {
+        size_t half = size_y / 2;
+        for_each([&](size_t i, size_t j, byte &data) {
+            if (j < half) {
+                byte t = data;
+                data = (*this)(i, size_y - j - 1);
+                (*this)(i, size_y - j - 1) = t;
+            }
+        });
+    } else if (direction == INVERT_VERTICAL) {
+        size_t half = size_x / 2;
+        for_each([&](size_t i, size_t j, byte &data) {
+            if (i < half) {
+                byte t = data;
+                data = (*this)(size_x - i - 1, j);
+                (*this)(size_x - i - 1, j) = t;
+            }
+        });
+    }
+}
+
+void Slice2D::negate() const
+{
+    for_each([](size_t, size_t, byte &data) {
+        data = ~data;
+    });
+}

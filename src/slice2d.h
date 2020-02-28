@@ -47,6 +47,17 @@ private:
     static size_t div_ceil(size_t x, size_t y);
     size_t translate(size_t x, size_t y) const;
 public:
+    enum RotationDirection {
+        ROTATE_0,
+        ROTATE_90,
+        ROTATE_180,
+        ROTATE_270
+    };
+    enum InversionDirection {
+        INVERT_NONE,
+        INVERT_HORIZONTAL,
+        INVERT_VERTICAL
+    };
     Slice2D(vec_byte &vec, size_t width);
     Slice2D(vec_byte &vec, size_t width,
         size_t start_x, size_t end_x, size_t step_x,
@@ -58,4 +69,7 @@ public:
     void print() const;
     void copy_to(const Slice2D &other) const;
     void swap(const Slice2D &other) const;
+    void rotate(RotationDirection direction) const;
+    void invert(InversionDirection direction) const;
+    void negate() const;
 };
