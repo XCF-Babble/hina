@@ -30,44 +30,7 @@
 
 #pragma once
 
-#include <functional>
-
-#include "types.h"
-
-class Slice2D {
+class Crypto {
 public:
-    typedef std::function<void(size_t, size_t, uint8_t&)> for_each_cb;
-private:
-    vec_byte &vec;
-    size_t width;
-    size_t start_x, size_x, step_x;
-    size_t start_y, size_y, step_y;
-    static size_t div_ceil(size_t x, size_t y);
-    size_t translate(size_t x, size_t y) const;
-public:
-    enum RotationDirection {
-        ROTATE_0,
-        ROTATE_90,
-        ROTATE_180,
-        ROTATE_270
-    };
-    enum InversionDirection {
-        INVERT_NONE,
-        INVERT_HORIZONTAL,
-        INVERT_VERTICAL
-    };
-    Slice2D(vec_byte &vec, size_t width);
-    Slice2D(vec_byte &vec, size_t width,
-        size_t start_x, size_t end_x, size_t step_x,
-        size_t start_y, size_t end_y, size_t step_y);
-    size_t h() const;
-    size_t w() const;
-    uint8_t &operator ()(size_t x, size_t y) const;
-    void for_each(for_each_cb cb) const;
-    void print() const;
-    void copy_to(const Slice2D &other) const;
-    void swap(const Slice2D &other) const;
-    void rotate(RotationDirection direction) const;
-    void invert(InversionDirection direction) const;
-    void negate() const;
+    static void init();
 };

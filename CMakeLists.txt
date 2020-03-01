@@ -19,6 +19,7 @@ ExternalProject_Add(libsodium
 
 option(BUILD_SHARED_LIBS "Build shared libraries." ON)
 add_library(hina
+    src/crypto.cpp
     src/random_stream.cpp
     src/slice2d.cpp
 )

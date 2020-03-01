@@ -40,9 +40,8 @@
 
 class StreamingDPRNG {
 public:
-    typedef uint8_t byte;
-    typedef std::array<byte, NUM_RAND_BYTES> random_pool;
-    typedef std::array<byte, KEY_LEN> arr_key;
+    typedef std::array<uint8_t, NUM_RAND_BYTES> random_pool;
+    typedef std::array<uint8_t, KEY_LEN> arr_key;
 private:
     int pos;
     uint32_t buckets;
