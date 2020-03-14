@@ -29,13 +29,19 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-import ctypes
+from ctypes import *
 
 from PIL import Image
 
 def hina(im, password, decrypt):
-    libhina = ctypes.cdll.LoadLibrary('libhina.so')
+    libhina = cdll.LoadLibrary('libhina.so')
+    c_hina = libhina.hina
+    c_hina.argtypes = [POINTER(c_size_t), POINTER(c_size_t), POINTER(c_uint8), c_size_t, c_size_t, c_char_p, c_int]
+    c_hina.restype = POINTER(c_uint8)
+    c_hina_free = libhina.hina_free
+    c_hina_free.argtypes = [POINTER(c_uint8)]
     im = im.convert('L') if decrypt else im.convert('RGB')
+    decrypt = int(decrypt)
     return im
 
 def main():
