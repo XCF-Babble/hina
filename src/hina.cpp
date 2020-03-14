@@ -30,8 +30,6 @@
 
 #include "hina.h"
 
-#include <cstdlib>
-
 #include "hina_impl.h"
 
 using namespace std;
@@ -43,12 +41,17 @@ uint8_t *hina(size_t *out_height, size_t *out_width,
     try {
         vec_byte result, input(in, in + in_height * in_width * 3);
         Hina::hina(result, *out_height, *out_width, input, in_height, in_width, password, decrypt);
-        uint8_t *ret = reinterpret_cast<uint8_t *>(malloc(result.size()));
-        if (ret == NULL)
-            return NULL;
+        uint8_t *ret = new uint8_t[result.size()];
         copy(result.cbegin(), result.cend(), ret);
         return ret;
     } catch (...) {
         return NULL;
     }
+}
+
+void hina_free(uint8_t *out)
+{
+    try {
+        delete[] out;
+    } catch (...) {}
 }
