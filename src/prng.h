@@ -28,42 +28,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "random_stream.h"
+#pragma once
 
-#include <stdexcept>
+#include <cstdint>
+#include <string>
 
-using namespace std;
-
-uint32_t StreamingDPRNG::maybe_reseed_and_get_random() {
-    uint32_t r;
-
-    if (pos == 0)
-        /* Reseed */
-        randombytes_buf_deterministic(buf.data(), buf.max_size(), key.data());
-
-    r = buf[pos];
-    pos = (pos + 1) % NUM_RAND_BYTES;
-    return r;
-}
-
-StreamingDPRNG::StreamingDPRNG(uint8_t key[KEY_LEN], uint32_t buckets) : pos(0), buckets(buckets) {
-    if (sodium_init() < 0)
-        throw runtime_error("Could not initialize libsodium");
-
-    if (buckets < 2)
-        throw invalid_argument("Must have at least two buckets");
-    key = move(key);
-}
-
-uint32_t StreamingDPRNG::get_random() {
-    uint32_t min, r;
-
-    min = (1U + ~buckets) % buckets; /* = 2**32 mod upper_bound */
-    do {
-        r = maybe_reseed_and_get_random();
-    } while (r < min);
-    /* r is now clamped to a set whose size mod upper_bound == 0
-     * the worst case (2**31+1) requires ~ 2 attempts */
-
-    return r % buckets;
-}
+class PRNG {
+private:
+    enum {
+        BUFFER_LEN = 64
+    };
+    std::string key;
+    std::string nonce;
+    uint32_t buckets;
+    uint32_t l_bound;
+    std::string buffer;
+    size_t pos;
+    void reseed();
+public:
+    PRNG(const std::string &password, const std::string &salt, uint32_t buckets);
+    uint32_t get_random();
+};

@@ -28,28 +28,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "prng.h"
 
-#include <array>
-#include <cstdint>
+#include "crypto.h"
 
-#include <sodium.h>
+using namespace std;
 
-#define KEY_LEN randombytes_SEEDBYTES
-#define NUM_RAND_BYTES 128
+void PRNG::reseed()
+{
+    buffer = Crypto::prng(key, nonce, BUFFER_LEN);
+    pos = 0;
+    Crypto::plus_one(nonce);
+}
 
-class StreamingDPRNG {
-public:
-    typedef std::array<uint8_t, NUM_RAND_BYTES> random_pool;
-    typedef std::array<uint8_t, KEY_LEN> arr_key;
-private:
-    int pos;
-    uint32_t buckets;
-    random_pool buf;
-    arr_key key;
+PRNG::PRNG(const string &password, const string &salt, uint32_t buckets) :
+    buckets(buckets), l_bound(0x100000000 % buckets)
+{
+    Crypto::init();
+    key = Crypto::derive_key(password, salt);
+    nonce = Crypto::zero_nonce();
+    reseed();
+}
 
-    uint32_t maybe_reseed_and_get_random();
-public:
-    StreamingDPRNG(uint8_t key[KEY_LEN], uint32_t buckets);
-    uint32_t get_random();
-};
+uint32_t PRNG::get_random()
+{
+    uint32_t r;
+    do {
+        if (pos == BUFFER_LEN)
+            reseed();
+        r = buffer[pos++];
+        r = (r << 8) | buffer[pos++];
+        r = (r << 8) | buffer[pos++];
+        r = (r << 8) | buffer[pos++];
+    } while (r < l_bound);
+    return r % buckets;
+}
