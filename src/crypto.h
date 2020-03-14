@@ -30,7 +30,13 @@
 
 #pragma once
 
+#include <string>
+
 class Crypto {
 public:
     static void init();
+    static std::string derive_key(const std::string &password, const std::string &salt);
+    static std::string zero_nonce();
+    static void plus_one(std::string &s);
+    static std::string prng(const std::string &key, const std::string &nonce, size_t len);
 };

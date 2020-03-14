@@ -41,3 +41,31 @@ void Crypto::init()
     if (sodium_init() == -1)
         throw runtime_error("could not initialize libsodium");
 }
+
+string Crypto::derive_key(const string &password, const string &salt)
+{
+    string ret(crypto_stream_chacha20_ietf_KEYBYTES, 0);
+    if (crypto_pwhash(reinterpret_cast<unsigned char *>(&ret[0]), ret.size(),
+        password.c_str(), password.size(), reinterpret_cast<const unsigned char *>(salt.c_str()),
+        crypto_pwhash_OPSLIMIT_INTERACTIVE, crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_DEFAULT) != 0)
+        throw runtime_error("unable to derive key");
+    return ret;
+}
+
+string Crypto::zero_nonce()
+{
+    return string(crypto_stream_chacha20_ietf_NONCEBYTES, 0);
+}
+
+void Crypto::plus_one(string &s)
+{
+    sodium_increment(reinterpret_cast<unsigned char *>(&s[0]), s.size());
+}
+
+string Crypto::prng(const string &key, const string &nonce, size_t len)
+{
+    string ret(len, 0);
+    crypto_stream_chacha20_ietf(reinterpret_cast<unsigned char *>(&ret[0]), ret.size(),
+        reinterpret_cast<const unsigned char *>(nonce.c_str()), reinterpret_cast<const unsigned char *>(key.c_str()));
+    return ret;
+}
