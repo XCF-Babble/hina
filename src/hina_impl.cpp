@@ -29,3 +29,12 @@
  */
 
 #include "hina_impl.h"
+
+using namespace std;
+
+void Hina::hina(vec_byte &out, size_t &out_height, size_t &out_width,
+    const vec_byte &in, size_t in_height, size_t in_width,
+    const string &password, bool decrypt)
+{
+
+}

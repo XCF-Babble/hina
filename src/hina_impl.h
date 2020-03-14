@@ -29,3 +29,14 @@
  */
 
 #pragma once
+
+#include <string>
+
+#include "types.h"
+
+class Hina {
+public:
+    static void hina(vec_byte &out, size_t &out_height, size_t &out_width,
+        const vec_byte &in, size_t in_height, size_t in_width,
+        const std::string &password, bool decrypt);
+};
