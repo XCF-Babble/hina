@@ -20,12 +20,12 @@ ExternalProject_Add(libsodium
 option(BUILD_SHARED_LIBS "Build shared libraries." ON)
 add_library(hina
     src/crypto.cpp
+    src/hina_impl.cpp
+    src/hina.cpp
     src/prng.cpp
     src/slice2d.cpp
 )
+include_directories(${CMAKE_SOURCE_DIR}/include)
 add_dependencies(hina libsodium)
 include_directories(${CMAKE_BINARY_DIR}/libsodium/include)
 target_link_libraries(hina ${CMAKE_BINARY_DIR}/libsodium/lib/libsodium.a)
-
-add_executable(test src/test.cpp)
-target_link_libraries(test hina)
