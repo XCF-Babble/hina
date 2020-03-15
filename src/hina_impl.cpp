@@ -36,5 +36,14 @@ void Hina::hina(vec_byte &out, size_t &out_height, size_t &out_width,
     const vec_byte &in, size_t in_height, size_t in_width,
     const string &password, bool decrypt)
 {
-
+    if (decrypt) {
+        out.resize(3);
+        out[0] = 0;
+        out[1] = 255;
+        out[2] = 255;
+    } else {
+        out.resize(1);
+        out[0] = 128;
+    }
+    out_height = out_width = 1;
 }
