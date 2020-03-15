@@ -82,6 +82,19 @@ void Hina::hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
     PRNG prng_scramble(password, salt_scramble, num_blocks);
     for (size_t i = 0; i < num_blocks; ++i)
         get_block(i, slice).swap(get_block(prng_scramble.get_random(), slice));
+    
+    PRNG prng_rotate(password, salt_rotate, 4);
+    for (size_t i = 0; i < num_blocks; ++i)
+        get_block(i, slice).rotate(static_cast<Slice2D::RotationDirection>(prng_rotate.get_random()));
+
+    PRNG prng_invert(password, salt_invert, 3);
+    for (size_t i = 0; i < num_blocks; ++i)
+        get_block(i, slice).invert(static_cast<Slice2D::InversionDirection>(prng_invert.get_random()));
+    
+    PRNG prng_negate(password, salt_negate, 2);
+    for (size_t i = 0; i < num_blocks; ++i)
+        if (prng_negate.get_random())
+            get_block(i, slice).negate();
 }
 
 void Hina::hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
@@ -91,6 +104,31 @@ void Hina::hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
     vec_byte tmp(in);
     Slice2D slice(tmp, in_width);
     size_t num_blocks = (in_height / BLOCK_SIZE) * (in_width / BLOCK_SIZE);
+
+    PRNG prng_negate(password, salt_negate, 2);
+    for (size_t i = 0; i < num_blocks; ++i)
+        if (prng_negate.get_random())
+            get_block(i, slice).negate();
+
+    PRNG prng_invert(password, salt_invert, 3);
+    for (size_t i = 0; i < num_blocks; ++i)
+        get_block(i, slice).invert(static_cast<Slice2D::InversionDirection>(prng_invert.get_random()));
+
+    PRNG prng_rotate(password, salt_rotate, 4);
+    for (size_t i = 0; i < num_blocks; ++i)
+        switch (static_cast<Slice2D::RotationDirection>(prng_rotate.get_random())) {
+        case Slice2D::ROTATE_0:
+            break;
+        case Slice2D::ROTATE_90:
+            get_block(i, slice).rotate(Slice2D::ROTATE_270);
+            break;
+        case Slice2D::ROTATE_180:
+            get_block(i, slice).rotate(Slice2D::ROTATE_180);
+            break;
+        case Slice2D::ROTATE_270:
+            get_block(i, slice).rotate(Slice2D::ROTATE_90);
+            break;
+        }
 
     PRNG prng_scramble(password, salt_scramble, num_blocks);
     vector<uint32_t> scramble_rands(num_blocks, 0);
