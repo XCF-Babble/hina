@@ -52,8 +52,8 @@ void Hina::hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
     const vec_byte &in, size_t in_height, size_t in_width,
     const string &password)
 {
-    out_height = in_height + ((8 - in_height % 8) % 8);
-    out_width = in_width + ((8 - in_width % 8) % 8);
+    out_height = in_height + ((BLOCK_SIZE - in_height % BLOCK_SIZE) % BLOCK_SIZE);
+    out_width = in_width + ((BLOCK_SIZE - in_width % BLOCK_SIZE) % BLOCK_SIZE);
     bool vstack = out_height * 3 >= out_width * 2;
     out.resize(out_height * out_width * 3);
     Slice2D slice_r(const_cast<vec_byte &>(in), in_width * 3, 0, in_height, 1, 0, in_width * 3, 3);
