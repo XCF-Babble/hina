@@ -35,6 +35,13 @@
 #include "types.h"
 
 class Hina {
+private:
+    static void hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
+        const vec_byte &in, size_t in_height, size_t in_width,
+        const std::string &password);
+    static void hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
+        const vec_byte &in, size_t in_height, size_t in_width,
+        const std::string &password);
 public:
     static void hina(vec_byte &out, size_t &out_height, size_t &out_width,
         const vec_byte &in, size_t in_height, size_t in_width,

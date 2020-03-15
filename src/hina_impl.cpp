@@ -32,18 +32,30 @@
 
 using namespace std;
 
+void Hina::hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
+    const vec_byte &in, size_t in_height, size_t in_width,
+    const std::string &password)
+{
+    out = in;
+    out_height = in_height;
+    out_width = in_width * 3;
+}
+
+void Hina::hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
+    const vec_byte &in, size_t in_height, size_t in_width,
+    const std::string &password)
+{
+    out = in;
+    out_height = in_height;
+    out_width = in_width / 3;
+}
+
 void Hina::hina(vec_byte &out, size_t &out_height, size_t &out_width,
     const vec_byte &in, size_t in_height, size_t in_width,
     const string &password, bool decrypt)
 {
-    if (decrypt) {
-        out.resize(3);
-        out[0] = 0;
-        out[1] = 255;
-        out[2] = 255;
-    } else {
-        out.resize(1);
-        out[0] = 128;
-    }
-    out_height = out_width = 1;
+    if (decrypt)
+        hina_decrypt(out, out_height, out_width, in, in_height, in_width, password);
+    else
+        hina_encrypt(out, out_height, out_width, in, in_height, in_width, password);
 }
