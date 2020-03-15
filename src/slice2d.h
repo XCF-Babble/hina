@@ -62,6 +62,7 @@ public:
         size_t start_y, size_t end_y, size_t step_y);
     size_t h() const;
     size_t w() const;
+    vec_byte &data() const;
     uint8_t &operator ()(size_t x, size_t y) const;
     void for_each(for_each_cb cb) const;
     void print() const;

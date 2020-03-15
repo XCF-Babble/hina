@@ -80,6 +80,11 @@ size_t Slice2D::w() const
     return size_y;
 }
 
+vec_byte &Slice2D::data() const
+{
+    return vec;
+}
+
 uint8_t &Slice2D::operator ()(size_t x, size_t y) const
 {
     return vec[translate(x, y)];

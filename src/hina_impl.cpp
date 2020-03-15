@@ -30,9 +30,23 @@
 
 #include "hina_impl.h"
 
-#include "slice2d.h"
+#include "prng.h"
 
 using namespace std;
+
+const string Hina::salt_scramble("scramblescramble");
+const string Hina::salt_rotate("rotaterotaterota");
+const string Hina::salt_invert("invertinvertinve");
+const string Hina::salt_negate("negatenegatenega");
+
+Slice2D Hina::get_block(size_t index, const Slice2D &slice)
+{
+    size_t width = slice.w();
+    size_t num_blocks_row = width / BLOCK_SIZE;
+    size_t x = index / num_blocks_row * BLOCK_SIZE;
+    size_t y = index % num_blocks_row * BLOCK_SIZE;
+    return Slice2D(slice.data(), width, x, x + BLOCK_SIZE, 1, y, y + BLOCK_SIZE, 1);
+}
 
 void Hina::hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
     const vec_byte &in, size_t in_height, size_t in_width,
@@ -62,6 +76,12 @@ void Hina::hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
         slice_b.copy_to(slice_out_3);
         out_width *= 3;
     }
+    Slice2D slice(out, out_width);
+    size_t num_blocks = (out_height / BLOCK_SIZE) * (out_width / BLOCK_SIZE);
+
+    PRNG prng_scramble(password, salt_scramble, num_blocks);
+    for (size_t i = 0; i < num_blocks; ++i)
+        get_block(i, slice).swap(get_block(prng_scramble.get_random(), slice));
 }
 
 void Hina::hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
@@ -69,6 +89,15 @@ void Hina::hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
     const string &password)
 {
     vec_byte tmp(in);
+    Slice2D slice(tmp, in_width);
+    size_t num_blocks = (in_height / BLOCK_SIZE) * (in_width / BLOCK_SIZE);
+
+    PRNG prng_scramble(password, salt_scramble, num_blocks);
+    vector<uint32_t> scramble_rands(num_blocks, 0);
+    for (size_t i = 0; i < num_blocks; ++i)
+        scramble_rands[i] = prng_scramble.get_random();
+    for (size_t i = num_blocks - 1; i != static_cast<size_t>(-1); --i)
+        get_block(i, slice).swap(get_block(scramble_rands[i], slice));
 
     bool vstack = in_height > in_width;
     out.resize(tmp.size());
