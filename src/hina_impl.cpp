@@ -79,7 +79,7 @@ void Hina::hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
     Slice2D slice(out, out_width);
     size_t num_blocks = (out_height / BLOCK_SIZE) * (out_width / BLOCK_SIZE);
 
-    PRNG prng_scramble(password, salt_scramble, num_blocks);
+    PRNG prng_scramble(password, salt_scramble, static_cast<uint32_t>(num_blocks));
     for (size_t i = 0; i < num_blocks; ++i)
         get_block(i, slice).swap(get_block(prng_scramble.get_random(), slice));
     
@@ -130,7 +130,7 @@ void Hina::hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
             break;
         }
 
-    PRNG prng_scramble(password, salt_scramble, num_blocks);
+    PRNG prng_scramble(password, salt_scramble, static_cast<uint32_t>(num_blocks));
     vector<uint32_t> scramble_rands(num_blocks, 0);
     for (size_t i = 0; i < num_blocks; ++i)
         scramble_rands[i] = prng_scramble.get_random();
