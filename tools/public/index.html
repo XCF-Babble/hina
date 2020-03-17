@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Hina</title>
+    <style>
+      body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+      }
+      input {
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hina</h1>
+    <form method="POST" action="hina" enctype="multipart/form-data">
+      <input type="file" id="image" name="image" accept="image/*" required><br>
+      <input type="text" id="password" name="password" placeholder="Password"><br>
+      <input type="checkbox" id="decrypt" name="decrypt" checked>
+      <label for="decrypt">Decrypt</label><br>
+      <input type="submit" value="Hina!">
+    </form>
+  </body>
+</html>
