@@ -28,33 +28,43 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 from ctypes import *
+import platform
 
 from PIL import Image
 
+system = platform.uname()[0]
+if system == 'Windows':
+    lib_name = 'hina.dll'
+elif system == 'Linux':
+    lib_name = 'libhina.so'
+else:
+    lib_name = 'libhina.dylib'
+
+libhina = cdll.LoadLibrary(lib_name)
+c_hina = libhina.hina
+c_hina.argtypes = [POINTER(c_size_t), POINTER(c_size_t), POINTER(c_uint8), c_size_t, c_size_t, c_char_p, c_int]
+c_hina.restype = POINTER(c_uint8)
+c_hina_free = libhina.hina_free
+c_hina_free.argtypes = [POINTER(c_uint8)]
+
 def hina(im, password, decrypt):
-    libhina = cdll.LoadLibrary('libhina.so')
-    c_hina = libhina.hina
-    c_hina.argtypes = [POINTER(c_size_t), POINTER(c_size_t), POINTER(c_uint8), c_size_t, c_size_t, c_char_p, c_int]
-    c_hina.restype = POINTER(c_uint8)
-    c_hina_free = libhina.hina_free
-    c_hina_free.argtypes = [POINTER(c_uint8)]
     im = im.convert('L' if decrypt else 'RGB')
     decrypt = int(decrypt)
     c_out_height, c_out_width = c_size_t(), c_size_t()
-    im_data = list(im.getdata())
+    im_data = tuple(im.getdata())
     if not decrypt:
-        im_data = [x for sets in im_data for x in sets]
+        im_data = tuple(x for sets in im_data for x in sets)
     c_in = (c_uint8 * len(im_data))(*im_data)
     c_out = c_hina(byref(c_out_height), byref(c_out_width), c_in, im.size[1], im.size[0], password.encode(), decrypt)
     out_height, out_width = c_out_height.value, c_out_width.value
     out_size = out_height * out_width * (3 if decrypt else 1)
-    out = bytes([c_out[i] for i in range(out_size)])
+    out = bytes(c_out[i] for i in range(out_size))
     c_hina_free(c_out)
-    return Image.frombytes('RGB' if decrypt else 'L', (out_width, out_height), out)
+    return Image.frombytes('RGB' if decrypt else 'L', (out_width, out_height), out)  
 
-def main():
+if __name__ == '__main__':
+    import argparse
     parser = argparse.ArgumentParser(description='A hina frontend in Python.')
     parser.add_argument('-d', '--decrypt', action='store_true', help='decrypt the image')
     parser.add_argument('-p', '--password', default='', help='the password to encrypt/decrypt the image')
@@ -62,6 +72,3 @@ def main():
     parser.add_argument('outfile', help='the filename to output the resulting image')
     args = parser.parse_args()
     hina(Image.open(args.infile), args.password, args.decrypt).save(args.outfile)
-
-if __name__ == '__main__':
-    main()

@@ -61,5 +61,8 @@ The decrypted image with a bad password:
 3. Make sure you have [Python 3](https://www.python.org/) and [Pillow](https://pypi.org/project/Pillow/) installed. To try the helper Python script that calls into the library:
     ```
     cd ../tools
+    # On Linux
     LD_LIBRARY_PATH=../build ./hina.py -h
+    # or, on macOS
+    DYLD_LIBRARY_PATH=../build ./hina.py -h
     ```
