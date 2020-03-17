@@ -66,3 +66,10 @@ The decrypted image with a bad password:
     # or, on macOS
     DYLD_LIBRARY_PATH=../build ./hina.py -h
     ```
+4. If you want to host a web server, make sure that [Flask](https://palletsprojects.com/p/flask/) is installed:
+    ```
+    # On Linux
+    LD_LIBRARY_PATH=../build ./server.py
+    # or, on macOS
+    DYLD_LIBRARY_PATH=../build ./server.py
+    ```

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (c) 2020, The Hina Authors
 # All rights reserved.
 #
@@ -53,3 +55,6 @@ def process():
     result.save(f, 'JPEG')
     f.seek(0)
     return send_file(f, mimetype='image/jpeg')
+
+if __name__ == '__main__':
+    app.run()
