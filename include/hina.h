@@ -39,7 +39,7 @@ extern "C" {
 
 uint8_t *hina(size_t *out_height, size_t *out_width,
     const uint8_t *in, size_t in_height, size_t in_width,
-    const char *password, int decrypt);
+    const char *password, size_t block_size, int decrypt);
 
 void hina_free(uint8_t *out);
 

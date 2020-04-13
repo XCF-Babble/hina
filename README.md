@@ -3,10 +3,13 @@
 A JPEG-resistant image encryptor/decryptor library. This library implements [arXiv:1811.00236](https://arxiv.org/abs/1811.00236) \[cs.CR\], which proposes an image encryption scheme that can defend the encrypted image against JPEG compression. Some notable differences between this implementation and the paper:
 
 - Instead of converting the image from RGB space to YCbCr space, this implementation splits the image in the RGB space directly.
+- The block size can be customized.
 - The 3 channels of the encrypted image might be stacked vertically or horizontally so that one axis is always twice as big as the other axis. This is designed specifically for the compression scheme used by WeChat Moments.
 - Block rotation and block inversion are 2 separate steps.
 
 ## Demos
+
+Note: all demos have a block size of 8, which is recommended by the paper.
 
 The original image:  
 (The following image is excerpted from [映画『天気の子』スペシャル予報](https://youtu.be/DdJXOvtNsCY?t=280).)
@@ -65,11 +68,4 @@ The decrypted image with a bad password:
     LD_LIBRARY_PATH=../build ./hina.py -h
     # or, on macOS
     DYLD_LIBRARY_PATH=../build ./hina.py -h
-    ```
-4. If you want to host a web server, make sure that [Flask](https://palletsprojects.com/p/flask/) is installed:
-    ```
-    # On Linux
-    LD_LIBRARY_PATH=../build ./server.py
-    # or, on macOS
-    DYLD_LIBRARY_PATH=../build ./server.py
     ```

@@ -37,22 +37,19 @@
 
 class Hina {
 private:
-    enum {
-        BLOCK_SIZE = 8
-    };
     static const std::string salt_scramble;
     static const std::string salt_rotate;
     static const std::string salt_invert;
     static const std::string salt_negate;
-    static Slice2D get_block(size_t index, const Slice2D &slice);
+    static Slice2D get_block(size_t index, size_t block_size, const Slice2D &slice);
     static void hina_encrypt(vec_byte &out, size_t &out_height, size_t &out_width,
         const vec_byte &in, size_t in_height, size_t in_width,
-        const std::string &password);
+        const std::string &password, size_t block_size);
     static void hina_decrypt(vec_byte &out, size_t &out_height, size_t &out_width,
         const vec_byte &in, size_t in_height, size_t in_width,
-        const std::string &password);
+        const std::string &password, size_t block_size);
 public:
     static void hina(vec_byte &out, size_t &out_height, size_t &out_width,
         const vec_byte &in, size_t in_height, size_t in_width,
-        const std::string &password, bool decrypt);
+        const std::string &password, size_t block_size, bool decrypt);
 };

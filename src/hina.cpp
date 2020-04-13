@@ -36,11 +36,11 @@ using namespace std;
 
 uint8_t *hina(size_t *out_height, size_t *out_width,
     const uint8_t *in, size_t in_height, size_t in_width,
-    const char *password, int decrypt)
+    const char *password, size_t block_size, int decrypt)
 {
     try {
         vec_byte result, input(in, in + in_height * in_width * (decrypt ? 1 : 3));
-        Hina::hina(result, *out_height, *out_width, input, in_height, in_width, password, decrypt);
+        Hina::hina(result, *out_height, *out_width, input, in_height, in_width, password, block_size, decrypt);
         uint8_t *ret = new uint8_t[result.size()];
         copy(result.cbegin(), result.cend(), ret);
         return ret;

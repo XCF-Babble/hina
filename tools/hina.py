@@ -43,12 +43,12 @@ else:
 
 libhina = cdll.LoadLibrary(lib_name)
 c_hina = libhina.hina
-c_hina.argtypes = [POINTER(c_size_t), POINTER(c_size_t), POINTER(c_uint8), c_size_t, c_size_t, c_char_p, c_int]
+c_hina.argtypes = [POINTER(c_size_t), POINTER(c_size_t), POINTER(c_uint8), c_size_t, c_size_t, c_char_p, c_size_t, c_int]
 c_hina.restype = POINTER(c_uint8)
 c_hina_free = libhina.hina_free
 c_hina_free.argtypes = [POINTER(c_uint8)]
 
-def hina(im, password, decrypt):
+def hina(im, password, block_size, decrypt):
     im = im.convert('L' if decrypt else 'RGB')
     decrypt = int(decrypt)
     c_out_height, c_out_width = c_size_t(), c_size_t()
@@ -56,7 +56,7 @@ def hina(im, password, decrypt):
     if not decrypt:
         im_data = tuple(x for sets in im_data for x in sets)
     c_in = (c_uint8 * len(im_data))(*im_data)
-    c_out = c_hina(byref(c_out_height), byref(c_out_width), c_in, im.size[1], im.size[0], password.encode(), decrypt)
+    c_out = c_hina(byref(c_out_height), byref(c_out_width), c_in, im.size[1], im.size[0], password.encode(), block_size, decrypt)
     out_height, out_width = c_out_height.value, c_out_width.value
     out_size = out_height * out_width * (3 if decrypt else 1)
     out = bytes(c_out[i] for i in range(out_size))
@@ -68,7 +68,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='A hina frontend in Python.')
     parser.add_argument('-d', '--decrypt', action='store_true', help='decrypt the image')
     parser.add_argument('-p', '--password', default='', help='the password to encrypt/decrypt the image')
+    parser.add_argument('-b', '--block-size', type=int, default=8, help='the block size to encrypt/decrypt the image')
     parser.add_argument('infile', help='the image to encrypt/decrypt')
     parser.add_argument('outfile', help='the filename to output the resulting image')
     args = parser.parse_args()
-    hina(Image.open(args.infile), args.password, args.decrypt).save(args.outfile)
+    hina(Image.open(args.infile), args.password, args.block_size, args.decrypt).save(args.outfile)
